@@ -18,6 +18,7 @@ RADIATIVETRANS_DICT={
 STATES_DICT={
     "StateID":"get('stateID')",
     "SpecieID":"getparent().get('speciesID')",
+    "InChIKey":"getparent().MolecularChemicalSpecies.InChIKey",    
     "StateEnergyValue":"MolecularStateCharacterisation.StateEnergy.Value",
     "StateEnergyUnit":"MolecularStateCharacterisation.StateEnergy.Value.get('units')",
     "StateEnergyOrigin":"MolecularStateCharacterisation.StateEnergy.get('energyOrigin')",
@@ -460,7 +461,8 @@ class State(object):
     def __eq__(self,other):
 
         # There should be also a check for specie's inchikey
-
+        if self.InChIKey != other.InChIKey:
+            return False
         # Check if quantum numbers agree
         if self.QuantumNumbers != other.QuantumNumbers:
             return False
@@ -471,6 +473,8 @@ class State(object):
     def __ne__(self,other):
 
         # There should be also a check for specie's inchikey
+        if self.InChIKey != other.InChIKey:
+            return True
 
         # Check if quantum numbers agree
         if self.QuantumNumbers != other.QuantumNumbers:
