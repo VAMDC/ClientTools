@@ -319,32 +319,43 @@ class QuantumNumbers(object):
             return False
         # Check if the same quantum numbers are present in both descriptions
         #if self.qns.keys().sort() != other.qns.keys().sort():
-        if self.qns.keys()!= other.qns.keys():
-            return False
 
-        # Loop through all the quantum numbers and check if they agree        
-        for qn in self.qns:
-            if self.qns[qn]!=other.qns[qn]:
-                return False
+        # check if quantum numbers agree;
+        # Use 0, if vibrational state quantum numbers are not
+        # explecitly defined, in one of the quantum number sets
+        if len(self.qns)< len(other.qns):
+            qns1=self.qns
+            qns2=other.qns
+        else:
+            qns1=other.qns
+            qns2=self.qns
             
+        for qn in qns2:
+            if qns1.has_key(qn):
+                if qns1[qn]!=qns2[qn]:
+                    return False
+            else:
+                if qn not in ['v','vi'] or int(qns2[qn])!=0:
+                    return False
+                      
         return True
 
     def __ne__(self,other):
-        # Check if cases agree
-        if self.case != other.case:
-            return True
-        # Check if the same quantum numbers are present in both descriptions
-        #if self.qns.keys().sort() != other.qns.keys().sort():
-        if self.qns.keys()!= other.qns.keys():
-            return True
+        ## Check if cases agree
+        #if self.case != other.case:
+        #    return True
+        ## Check if the same quantum numbers are present in both descriptions
+        ##if self.qns.keys().sort() != other.qns.keys().sort():
+        #if self.qns.keys()!= other.qns.keys():
+        #    return True
 
-        # Loop through all the quantum numbers and check if they agree        
-        for qn in self.qns:
-            if self.qns[qn]!=other.qns[qn]:
-                return True
+        ## Loop through all the quantum numbers and check if they agree        
+        #for qn in self.qns:
+        #    if self.qns[qn]!=other.qns[qn]:
+        #        return True
             
-        return False
-
+        #return False
+        return not self.__eq__(other)
 
 
 class Source(object):
