@@ -5,6 +5,8 @@ import urllib2
 from specmodel import *
 from query import *
 
+XSD = "http://vamdc.org/xml/xsams/0.3"
+
 class Result(object):
 
     def __init__(self, xml=None, source=None):
@@ -115,6 +117,14 @@ class Result(object):
         self.States = States
         self.RadiativeTransitions = Radtranss
         self.CollisionalTransitions = Coltranss
+
+
+    def validate():
+
+        xsd=etree.XMLSchema(e.parse(XSD))
+        xml = etree.fromstring(self.Xml)
+
+        return xsd.validate(xml)
 
 
 

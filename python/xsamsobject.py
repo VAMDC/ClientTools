@@ -46,18 +46,47 @@ def xml2object(source):
     return root
 
 
-   
+def populate_model(root):
+    """
+    Populates classes of specmodel
+    """
 
+    molecules={}
+    radtranss={}
+    states={}
+    
+    for molecule in root.Species.Molecules.Molecule:
+        mol = Molecule(molecule)
+        molecules[mol.specieID]=mol
+
+        if molecule.__dict__.has_key('MolecularState'):
+
+            for state in molecule.MolecularState:
+                st = State(state)
+                states[st.StateID]=st
+
+    if root.__dict__.has_key('Processes'):
+        if root.Processes.__dict__.has_key('Radiative'):
+            if root.Processes.Radiative.__dict__.has_key('RadiativeTransition'):
+    
+                for radtrans in root.Processes.Radiative.RadiativeTransition:
+                    rt = RadiativeTransition(radtrans)
+                    radtranss[rt.Id]=rt
+
+
+    return molecules, states, radtranss
+
+    
 def printStateEnergies(root):
 
     for i in root.Species.Molecules.Molecule.MolecularState:
         print i.MolecularStateCharacterisation.StateEnergy.Value
-        print i.MolecularState.MolecularStateCharacterisation.TotalStatisticalWeight
+        print i.MolecularStateCharacterisation.TotalStatisticalWeight
 
 def printQN(state):
-    
+
     case = state.Case.get('caseID')
-    ns = "{http://vamdc.org/xml/xsams/0.2/cases/%s}" % case
+    ns = "{http://vamdc.org/xml/xsams/0.3/cases/%s}" % case
     #tag = "{http://vamdc.org/xml/xsams/0.2/cases/%s}*" % case 
     #for i in state.iterdescendants(tag=ns+"*"):
     for i in state.Case.iterchildren():
@@ -69,7 +98,7 @@ def printQN(state):
 def getqns(state):
     srow = {}
     srow['case']=state.Case.get('caseID')
-    ns = "{http://vamdc.org/xml/xsams/0.2/cases/%s}" % srow['case']
+    ns = "{http://vamdc.org/xml/xsams/0.3/cases/%s}" % srow['case']
 
     for i in state.Case.iterchildren():
         for j in i.iterchildren():
