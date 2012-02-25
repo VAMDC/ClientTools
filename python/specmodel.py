@@ -276,7 +276,41 @@ class QuantumNumbers(object):
         self.ns = self.getns()
         for i in xsamsstateel.Case.iterchildren():
             for j in i.iterchildren():
-                self.qns[j.tag.replace(self.ns,"")] = j
+                label, value, attributes = self.parse_qn(j)
+                self.qns[label]= value
+                #self.qns[j.tag.replace(self.ns,"")] = j
+
+    def parse_qn(self, qn_element):
+        """
+        evaluates the quantum number element with its attributes
+        """
+        if len(self.ns)>0:
+            label = qn_element.tag.replace(self.ns,"")
+        else:
+            label = qn_element.tag
+        
+        value = qn_element.text
+        # loop through all the attributes
+        attributes={}
+        for item in  qn_element.items():
+            if len(item)==2:
+                attributes[item[0]]=item[1]
+                if item[0]=='mode':
+                    label.replace('i',item[1])
+                    label.replace('j',item[1])
+                elif item[0]=='j':
+                    label.replace('j',item[1])
+                elif item[0]=='i':
+                    label.replace('i',item[1])
+                elif item[0]=='nuclearSpinRef':
+                    label="%s_%s" % (label, item[1])
+            elif len(item)==1:
+                attributes[item[0]]=None
+            else:
+                pass
+    
+        return label, value, attributes
+    
 
     def __eq__(self,other):
         # Check if cases agree
