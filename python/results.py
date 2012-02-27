@@ -127,16 +127,18 @@ class Result(object):
         return xsd.validate(xml)
 
 
+    def apply_stylesheet(xslt):
+        """
+        Applys a stylesheet to the xml object and returns
+        the result as string.
+
+        xslt = url / file which contains the stylesheet
+
+        returns:
+
+        String (the result of the operation)
+        """
+        # To be implemented
+        pass
 
 
-def match_states(states1, states2):
-
-    matches=[]
-    for state1 in states1:
-        for state2 in states2:
-            #if states2[state2].QuantumNumbers == states1[state1].QuantumNumbers:
-            if states2[state2] == states1[state1]:
-                print state1, state2
-                matches.append([state1,state2])
-
-    return matches
