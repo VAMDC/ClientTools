@@ -90,15 +90,17 @@ def append_coltranss(xml, coltrans):
     if len(collisions)==0:
         collisions = etree.SubElement(xml, "{%s}Collisions" % NSMAP['ns'])
         procs.append(collisions)
-    elif len(procs)>1:
+    elif len(collisions)>1:
         # Raise error
-        print "There should be only one Processes element"
+        print "There should be only one Collisions element"
         return
     else:
         collisions=collisions[0]
 
     species_list=[]
     for col in coltrans:
+        # todo: there should be a check if the collional transition already exists!
+        
         append_element(collisions, col)
 
         # get related elements and attach them to the document
@@ -113,4 +115,89 @@ def append_coltranss(xml, coltrans):
 
         # get method
 
-    return species_list
+
+    #species = col.xpath('//[ns:Molecule',namespaces=NSMAP)
+
+    return species_list #, species
+
+
+def append_specie(xml, specie):
+
+    # Check if specie is Molecule, Atom,
+    
+    # Check if Processes - element exists:
+    species = xml.xpath('//ns:Species', namespaces=NSMAP)
+    if len(species)==0:
+        species = etree.SubElement(xml, "{%s}Species" % NSMAP['ns'])
+        xml.append(species)
+    elif len(species)>1:
+        # Raise error
+        print "There should be only one Species element"
+        return
+    else:
+        species = species[0]
+
+    if specie.tag == '{%s}Molecule' % NSMAP['ns']:
+
+        # Check if Processes - element exists:
+        mols = xml.xpath('//ns:Molecules', namespaces=NSMAP)
+        if len(mols)==0:
+            mols = etree.SubElement(xml, "{%s}Molecules" % NSMAP['ns'])
+            xml.append(mols)
+        elif len(mols)>1:
+            # Raise error
+            print "There should be only one Molecules element"
+            return
+        else:
+            mols = mols[0]
+
+        append_element(mols, specie)
+
+    elif specie.tag == '{%s}Ion' % NSMAP['ns']:
+
+        atoms = xml.xpath('//ns:Atoms', namespaces=NSMAP)
+        if len(atoms)==0:
+            atoms = etree.SubElement(xml, "{%s}Atoms" % NSMAP['ns'])
+            xml.append(atoms)
+        elif len(atoms)>1:
+            # Raise error
+            print "There should be only one Molecules element"
+            return
+        else:
+            atoms = atoms[0]
+        
+        
+def get_or_create_mainelement(xml, tag):
+
+        el = xml.xpath('//ns:%s' % tag, namespaces=NSMAP)
+        if len(el)==0:
+            el = etree.SubElement(xml, "{%s}%s" % (NSMAP['ns'],tag))
+            xml.append(el)
+        elif len(el)>1:
+            # Raise error
+            print "There should be only one element"
+            return
+        else:
+            el = el[0]
+
+        return el
+
+    
+    
+def get_species_element(xml,id):
+
+    try:
+        el = xml.xpath('//*[@speciesID="%s"]' %id ,namespaces=NSMAP)
+    except Exception, e:
+        print "Could not get specie: %s" % e
+        return None
+
+
+    return el[0]
+
+
+
+def apply_stylesheet(xml, xsl):
+    
+    xsl=e.XSLT(e.parse(xsl))
+    return xsl(xml)) 

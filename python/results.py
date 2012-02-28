@@ -60,6 +60,9 @@ class Result(object):
         
         try:
             self.root = objectify.XML(self.Xml)
+        except ValueError:
+            self.Xml=etree.tostring(self.Xml)
+            self.root = objectify.XML(self.Xml)
         except Exception, e:
             print "Objectify error: %s " % e
 
@@ -119,12 +122,13 @@ class Result(object):
         self.CollisionalTransitions = Coltranss
 
 
-    def validate():
+    def validate(self):
 
-        xsd=etree.XMLSchema(e.parse(XSD))
+        if not hasattr(self, 'xsd'):
+            self.xsd=etree.XMLSchema(etree.parse(XSD))
         xml = etree.fromstring(self.Xml)
 
-        return xsd.validate(xml)
+        return self.xsd.validate(xml)
 
 
     def apply_stylesheet(xslt):
