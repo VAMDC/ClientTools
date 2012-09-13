@@ -43,16 +43,13 @@ def getNodeList():
 for $x in //ri:Resource
 where $x/capability[@standardID='ivo://vamdc/std/VAMDC-TAP']
 and $x/@status='active'
-return ($x/title, $x/capability[@standardID='ivo://vamdc/std/VAMDC-TAP']/interface/accessURL)"""
+return ($x/capability[@standardID='ivo://vamdc/std/VAMDC-TAP']/interface/accessURL)"""
 
     v=client.service.XQuerySearch(qr)
-    nameurls=[]
+    urls=[]
     while v:
-	nameurls.append({\
-			'name':v.pop(1),
-			'url':v.pop(0)['value'],
-			})
-    return nameurls
+	urls.append(v.pop(0)['value'])
+    return urls
 
 
 
