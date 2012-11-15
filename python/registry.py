@@ -9,7 +9,8 @@ routines for querying the registry
 #REL_REG='http://registry.vamdc.eu/registry-11.12/services/RegistryQueryv1_0'
 REL_REG='http://registry.vamdc.eu/registry-12.07/services/RegistryQueryv1_0'
 DEV_REG='http://casx019-zone1.ast.cam.ac.uk/registry/services/RegistryQueryv1_0'
-REGURL=REL_REG
+
+REGURL=DEV_REG
 WSDL=REGURL+'?wsdl'
 
 # this is a copy of the URL above but with
@@ -22,16 +23,31 @@ def getNodeList():
     client = Client(WSDL)
 
     qr="""declare namespace ri='http://www.ivoa.net/xml/RegistryInterface/v1.0';
-for $x in //ri:Resource
-where $x/capability[@standardID='ivo://vamdc/std/VAMDC-TAP']
-and $x/@status='active'
-return ($x/capability[@standardID='ivo://vamdc/std/VAMDC-TAP']/interface/accessURL)"""
+<nodes>
+{
+   for $x in //ri:Resource
+   where $x/capability[@standardID='ivo://vamdc/std/VAMDC-TAP']
+   and $x/@status='active'
+   and $x/capability[@standardID='ivo://vamdc/std/VAMDC-TAP']/versionOfStandards='12.07'
+   return  <node><title>{$x/title/text()}</title><url>{$x/capability[@standardID='ivo://vamdc/std/VAMDC-TAP']/interface/accessURL/text()}</url></node>   
+}
+</nodes>"""
+
 
     v=client.service.XQuerySearch(qr)
-    urls=[]
-    while v:
-        urls.append(v.pop(0)['value'])
-    return urls
+    nameurls=[]
+    for node in v.node:
+        # take only the first url
+        try:
+            url = node.url.split(" ")[0]
+        except:
+            url = None
+            
+	nameurls.append({\
+			'name':node.title,
+    			'url':url,
+			})
+    return nameurls
 
 
 
