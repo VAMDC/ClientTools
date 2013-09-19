@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 import requests
-from vamdc.other.registry import getNodeList
+from registry import getNodeList
 
 TIMEOUT = 5
 QUERY = sys.argv[1]
